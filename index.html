@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	<meta charset="utf-8">
+	<title>Aleatoria</title>
+	<style>
+		*   {
+			margin:0;
+			padding:0;
+		}
+		html {
+			height: 100%;		
+		}
+		body {
+			  background-image: url('boleto.png');
+			  background-repeat: no-repeat;
+			  min-height: 100%;
+		}
+
+		.button {
+			  background-color: #2C8954; /* Green */
+			  border: none;
+			  color: white;
+			  padding: 10px 20px;
+			  text-align: center;
+			  text-decoration: none;
+			  display: inline-block;
+			  font-size: 16px;
+			  margin: 85px 20px;
+			  cursor: pointer;
+			  border-radius: 4px;
+		} 
+
+		table,td  {
+			text-align:right;
+			border: 1px solid silver;
+			border-collapse: collapse;
+			padding: 3px;	
+		}
+		th {
+		text-align:center;
+		} 
+
+
+		</style>
+		<script>
+
+			let unAciertosSorteo = [0,0,0,0,0,0]; 
+			let numMarcado = Array(410).fill(false);
+			let ttAciertosSorteo = [0,0,0,0,0,0]; 
+			let ttImporteSorteos = [0,0,0,0,0,0]; 
+			var mutPrm = new Array();
+			mutPrm[0] = new Array();
+			mutPrm [0] = [[0,0,0,0,0,0],[1,1,42,0,0],[0,2,0,42,0],[0,0,2,42,0],[0,0,0,3,41],[0,0,0,0,4]];
+			mutPrm [1] = [[1,6,0,0,0],[1,0,6,0,0],[0,1,1,5,0],[0,0,2,5,0],[0,0,0,3,4],[0,0,0,0,4]];
+			mutPrm [2] = [[1,6,6,15,0],[1,0,12,15,0],[0,1,2,15,10],[0,0,3,15,10],[0,0,0,6,16],[0,0,0,0,10]];
+			mutPrm [3] = [[1,6,12,45,20],[1,0,18,45,20],[0,1,3,30,40],[0,0,4,30,40],[0,0,0,10,40],[0,0,0,0,20]];
+			mutPrm [4] = [[1,6,18,90,80],[1,0,24,90,80],[0,1,4,50,100],[0,0,5,50,100],[0,0,0,15,80],[0,0,0,0,35]];
+			mutPrm [5] = [[1,6,24,150,200],[1,0,24,90,80],[0,1,4,50,100],[0,0,6,75,200],[0,0,0,21,140],[0,0,0,0,56]];
+			const mutApt = [44,7,28,84,210,482];
+			const sorteo=[
+			[303,30, 325981.5 , 2 , 66785.08 , 2 , 902.50 , 74 , 25.18 , 3978 , 4.00 , 70847 , 0.50 , 422030 , 2113864, 1162625.20 ],
+			[302,29, 0 , 0 , 34502.45 , 3 , 924.17 , 56 , 19.29 , 4024 ,  4.00 , 68217 , 0.50 , 350883 , 1756455, 966050.25 ],
+			[301,28 , 366573.54 , 1 , 133299.47 , 1 , 952.14 ,70  , 24.30 , 4115 , 4.00 , 73010 , 0.50 , 427265 , 2130083 , 1171545.65 ],
+			[300,27 , 2480932.54 , 1 , 25702.04 , 7 , 603.74 , 149 , 18.61 , 7251 , 4.00 , 120984 , 0.50 , 613689 , 3074460.50 , 1690953.28 ],
+			[ 209,26, 0.00 , 0 , 52739.90 , 3 , 732.50 , 108 , 22.38 , 5302 , 4.00 , 97386 , 0.50 , 525359 , 2623650 , 1443007.50 ],
+			[ 298,25, 0.00 , 0 , 84780.49 , 2 , 892.43 , 95 , 24.37 , 5219 , 4.00 , 93320 , 0.50 , 538903 , 2713522 , 1492437.10 ],
+			[ 297,24, 0.00 , 0 , 151181.91 , 1 , 1079.87 , 70 , 27.28 , 4157 , 4.00 , 76117 , 0.50 , 470357 , 2356394.50 , 1296016.98]
+			];
+			let restanteSorteos = 0; 
+			modeMulti = (numMarcado.indexOf(true,400));
+			miApuestaA = []		
+			miReintegroA = Math.floor(Math.random() * 10) ;			
+			let cobroApuestas = 0;
+			let pagoApuestas = 0; 
+			let ttSorteos = 0;
+			let ttApuestas = 0;
+			let nmBolApts=1;	
+			let part0="<table><colgroup><col span='2' style='background-color: #CCFFFF'><col span='1' style='background-color: #FFFFCC'><col span='3' style='background-color: #FFFF99'></colgroup><tr><th colspan=2>Referencia</th><th>Categorías</th><th colspan=2>Apuestas</th></tr>";
+			const rotl = ["1a (6 Aciertos)","2a (5 Aciertos+C)","3a (5 Aciertors)","4a. (4 Aciertos)","5a (3 Aciertos)","Reintegro"]
+			let nmSpl = 77;
+
+			function simple6(){
+				bienRelleno=true;
+				nmSpl=0;
+				if ( (okEntre(0,50)!== 6) || (okEntre(50,100) !==6) ){
+					bienRelleno=false;
+				}else{
+					nmSpl = 2; 
+					var ceroCta = false;
+					for (var i=100; i<399; i+=50){
+						if (okEntre(i,i+49)==0){ 
+							ceroCta=true;
+						}else{
+
+							if (ceroCta==true){
+								bienRelleno = false;
+							}else{
+								if (okEntre(i,i+49)!== 6){
+									bienRelleno = false;
+								}else{
+									nmSpl = nmSpl +1;
+								}
+							}
+						}
+					}	
+				}
+				return bienRelleno;
+			}
+
+
+			function okEntre(ini,fin){
+				trues=0;
+				for (var i = ini; i < fin; i++) {
+					if (numMarcado[i]==true){trues=trues+1;}
+				}
+				return trues;
+			}
+
+			function hechoBoleto(){
+			if (okEntre(407,410)==0){alert(iniMsg);return;}
+				switch (okEntre(400,406)){
+					case 0: 
+						if (simple6()==true){
+							modeSimple=true;
+							for (var i = 0; i < nmSpl; i++) {	
+								miApuestaA.push([]);
+								for (var j = 0; j < 50; j++){
+									if (numMarcado[i*50+j]==true){
+										miApuestaA[i].push(j);							
+									} 
+								}
+							}
+						}else{
+							bienRelleno=false;
+						}
+
+						break;
+					case 1:
+						modeMulti = numMarcado.indexOf(true,400)+(-400);
+						if (okEntre(50,410)!==2){
+							bienRelleno=false;
+						}else{
+							var cM=okEntre(1,50);
+							if (cM<5 || cM==6 ||cM>11){
+								bienRelleno=false;
+							}else{
+								bienRelleno=true;
+								miApuestaA.push([]);
+								for (var i=1; i<50; i++){
+									if (numMarcado[i]==true){
+										miApuestaA[0].push(i);
+									}
+								} 
+							}
+						}
+						break;
+					default: 
+
+						bienRelleno=false;
+						break;
+				}
+			}
+
+			let b1="";
+			let b1En=false;
+			let saldoColor = "";
+		function veRsm(){
+			hechoBoleto();
+			if (bienRelleno == false){
+				comoJugar();
+				return;
+			}else{
+				procFase=false;
+			}
+			realComplementarioA = Math.floor(Math.random() * 49) + 1;
+			realReintegroA  = Math.floor(Math.random() * 10) ;
+			realSorteoA=[0,0,0,0,0,0];
+			for(i=0;i<6;i++){
+				realSorteoA [i] = Math.floor(Math.random() * 49) + 1;
+			}
+			let indexSorteo = Math.floor(Math.random() * 7);
+			if (sorteo[indexSorteo][2]==0){sorteo[indexSorteo][2]=150000.54;sorteo[indexSorteo][3]=1;}
+			let calPista = ""; 
+			var swCpl=false;
+			if (modeMulti<0){
+				var calSwCpl=0;
+				for (var ndxMyApta = 0; ndxMyApta < nmSpl; ndxMyApta++){
+					if(miApuestaA[ndxMyApta].indexOf(0)!== -1){nmBolApts=ndxMyApta; break;}
+					var numsIguales = realSorteoA.filter(function(n){return miApuestaA[ndxMyApta].indexOf(n) !== -1;});			
+					var enCategoria = numsIguales.length;
+					swCpl = false;
+					if ((numsIguales.indexOf(realComplementarioA)<0) && (miApuestaA[ndxMyApta].indexOf(realComplementarioA)>-1)){swCpl=true;}
+					if (enCategoria==6){
+						enCategoria=1;
+					}else if (enCategoria==5 && swCpl == true){
+						enCategoria=2
+						calSwCpl =  calSwCpl+1;
+					}else{
+						enCategoria=8-enCategoria;	
+					}
+					if (enCategoria < 6){ 
+						unAciertosSorteo [enCategoria-1] = unAciertosSorteo [enCategoria-1] +1
+					}
+					if (b1En==false){b1 = b1 + miApuestaA[ndxMyApta]+"<br>"};
+				}
+				for(var i=1; i<6;i++){
+					if(unAciertosSorteo[i]>0){
+
+						calPista =" "+ [i]+"a:"+unAciertosSorteo[i]+calPista;
+					}
+				}
+				calPista = calPista + "<br>";
+				if(calSwCpl>0){calPista=calPista+"C:"+calSwCpl;}
+				if (b1En==false){b1=b1+"R"+miReintegroA;b1En=true;}
+				if (realReintegroA == miReintegroA) {
+					unAciertosSorteo [5] = nmSpl;
+					calPista = calPista + " C" + nmSpl;
+				}				
+				ndxMyApta=0;
+			}else{
+				ndxMyApta=0;
+				if (b1En==false){b1 = b1 + miApuestaA[ndxMyApta]+"<br>R"+miReintegroA;b1En=true;}
+				var numsIguales = realSorteoA.filter(function(n){return miApuestaA[ndxMyApta].indexOf(n) !== -1;});
+				var enCategoria = numsIguales.length;
+				if ((numsIguales.indexOf(realComplementarioA)<0) && (miApuestaA[ndxMyApta].indexOf(realComplementarioA)>-1)){
+					swCpl=true;
+				}
+				if (enCategoria==6){
+					enCategoria=1;
+				}else if (enCategoria==5 && swCpl == true){
+					enCategoria=2
+				}else{
+					enCategoria=8-enCategoria;
+				}
+				if (modeMulti==0){
+					if (enCategoria==3){enCategoria=1;}else{enCategoria=enCategoria-1;}
+					if (swCpl==true){enCategoria=enCategoria-1;}
+				}
+
+				if (enCategoria > 5){ 
+					enCategoria=-1;
+				}else{
+					var newCat=enCategoria;
+					if(swCpl==true && (enCategoria==1 || enCategoria==3)){newCat=enCategoria-1;}
+					for (var j=0; j<5; j++){
+						unAciertosSorteo[j]=mutPrm[modeMulti][newCat][j];
+						if (unAciertosSorteo[j]>0){
+							calPista = calPista + " " + (j+1) + "a:" + unAciertosSorteo[j];
+						}
+					}
+
+				}
+					if (realReintegroA == miReintegroA) {
+						unAciertosSorteo [5] = unAciertosSorteo [5] + mutApt[modeMulti];
+						calPista = calPista + "<br> R:" + mutApt[modeMulti];
+					}
+			} 
+
+			for (var i=0;i<6;i++){
+				ttAciertosSorteo[i] =  ttAciertosSorteo[i] + unAciertosSorteo[i];
+				ttImporteSorteos[i] =  ttImporteSorteos[i] + ( unAciertosSorteo[i] * sorteo[indexSorteo][(i*2)+2]);
+				cobroApuestas = cobroApuestas + ( unAciertosSorteo[i] * sorteo[indexSorteo][(i*2)+2]);
+				unAciertosSorteo[i] = 0;		
+			}		
+			if (modeMulti<0){
+				ttApuestas=ttApuestas + nmSpl;
+			}else{
+				ttApuestas=ttApuestas + mutApt[modeMulti];
+			}
+			ttSorteos = ttSorteos +1;
+			b2=ttSorteos;
+
+			var x1=calPista;
+
+			c2=ttApuestas;;
+			pagoApuestas = .5 * c2;
+			var a1=realSorteoA+"<br> C"+realComplementarioA+"  R"+realReintegroA; 
+			var disMe=part0 +"<tr><td colspan=2>"+a1+"</td><td>"+x1+"</td><td colspan=2>"+b1+"</td></tr>"
+			+ "<tr><td colspan=2>Sorteo número "+sorteo[indexSorteo][0]+"</td><td></td><td>Tt. Sorteos</td><td>Tt. Apuestas</td></tr>"
+			+ "<tr><td colspan=2>"+sorteo[indexSorteo][1]+" Octubre de 2023</td><td></td><td>"+b2+"</td><td>"+c2+"</td></tr>"
+			+ "<tr style='border-top: 2px solid silver;'><td> Acertantes </td><td>Premio Unitario </td><td></td><td>&Sigma; Aciertos</td><td>&Sigma; Importes</td></tr>";
+			for (var i = 0; i < 6; i++){
+				disMe = disMe + "<tr><td>"+(sorteo[indexSorteo][(i*2)+3]).toLocaleString()+" </td><td>"+(sorteo[indexSorteo][(i*2)+2]).toLocaleString(undefined,{ minimumFractionDigits: 2 })+" € "
+				disMe = disMe + "</td><td>"+rotl[i]+"</td><td>"+ ttAciertosSorteo[i]+"</td><td>"+(ttImporteSorteos[i]).toLocaleString(undefined,{ minimumFractionDigits: 2 })+" € </td></tr>"	
+			}
+			if (cobroApuestas-pagoApuestas<0){saldoColor = "red";}else{saldoColor = "black";}
+			restanteSorteos=restanteSorteos+(sorteo[indexSorteo][14] - sorteo[indexSorteo][15]);		
+			disMe = disMe + "<tr style='border-top: 2px solid silver;'><td> Recaudación </td><td>"+(sorteo[indexSorteo][14]).toLocaleString(undefined,{ minimumFractionDigits: 2 })+" € </td><td></td><td> &Sigma; Cobro </td><td>"+(cobroApuestas).toLocaleString(undefined,{ minimumFractionDigits: 2 })+" €</td></tr>";	
+			disMe = disMe + "<tr><td> A premios </td><td style='color: red;'>"+((sorteo[indexSorteo][15])*-1).toLocaleString(undefined,{ minimumFractionDigits: 2 })+" € </td><td></td><td> &Sigma; Pago </td><td style='color: red;'>"+(pagoApuestas*-1).toLocaleString(undefined,{ minimumFractionDigits: 2 })+" €</td></tr>"
+			disMe = disMe + "<tr><td> &Sigma; Restante </td><td> "+(restanteSorteos).toLocaleString(undefined,{ minimumFractionDigits: 2 })+" €</td><td></td><td> &Sigma; Saldo </td><td style='color: "+saldoColor+";'> "+(cobroApuestas-pagoApuestas).toLocaleString(undefined,{ minimumFractionDigits: 2 })+" €</td></tr>"
+			document.getElementById("p1").innerHTML = disMe +"</table>";
+
+		} 
+
+		function moveCoors(){
+			  x = event.clientX;
+			  y = event.clientY;						  
+
+			if (enCuadro(x,y,20,136,908,436)==true ) {			  
+			  hbox=Math.floor((x-20)/22.2);
+			  vbox=Math.floor((y-136)/29.5);
+			  var casillaNum = (hbox*10)  + vbox;
+
+			  var casillaNum = (hbox*10)  + vbox;		
+			  if (casillaNum  % 50 !== 0 ){
+				x =(hbox * 22.1) + 26;
+				y = (vbox* 29.7) + 144;
+				if (numMarcado[casillaNum] !== true){
+					numMarcado[casillaNum] = true;
+					let img = document.createElement('img');
+					img.src ='marca.gif';
+					var A = "A"+casillaNum;
+					img.id=A;
+					document.getElementById('demo2').appendChild(img);
+					 var image = document.getElementById(A);
+					 image.id = img.id
+					image.style.display = '';
+					image.style.position = 'absolute';
+					image.style.left = x + 'px';
+					image.style.top = y + 'px'; 	
+				}else{
+					numMarcado[casillaNum] = false;
+					var image = document.getElementById('A'+casillaNum);							
+					image.remove();
+				}		  }
+			}else if (enCuadro(x,y,46,467,285,488)==true ) {
+				var divide = [78,122,167,213,261,285];
+				var iniX =[46,93,137,180,223,269];
+				var index=divide.findIndex(function(number) {
+				  return number > x;
+				});
+
+				if (numMarcado[400+index] !== true){
+					numMarcado[400+index] = true;
+					let img = document.createElement('img');
+					img.src ='marca.gif';
+					var B = "B"+index;
+					img.id=B;
+					document.getElementById('demo2').appendChild(img);
+					 var image = document.getElementById(B);
+					 image.id = img.id
+					image.style.display = '';
+					image.style.position = 'absolute';
+					image.style.left = iniX[index] + 'px';
+					image.style.top = 469 + 'px'; 
+				}else{
+					numMarcado[400+index] = false;
+					var image = document.getElementById("B"+index);	
+					image.remove();
+				}
+			}else if (enCuadro(x,y,396,525,793,553)==true ) {	
+				var divide = [499,688,793];
+				var iniX =[402,603,780];
+				var index=divide.findIndex(function(number) {
+				  return number > x;
+				});
+
+				if (numMarcado[407+index] !== true){
+					numMarcado[407+index] = true;
+					let img = document.createElement('img');
+					img.src ='marca.gif';
+					var C = "C"+index;
+					img.id=C;
+					document.getElementById('demo2').appendChild(img);
+					 var image = document.getElementById(C);
+					 image.id = img.id
+					image.style.display = '';
+					image.style.position = 'absolute';
+					image.style.left = iniX[index] + 'px';
+					image.style.top = 530 + 'px'; 
+				}else{
+					numMarcado[407+index] = false;
+					var image = document.getElementById("C"+index);	
+					image.remove();
+				}	
+			} else {
+			} 
+		} 
+
+
+		let hbox; let vbox; let x; let y;
+		let z=12;
+
+		let procFase=true;
+
+		function enCuadro(x, y, z1, z2, z3, z4) {
+			x1 = Math.min(z1, z3);
+			x2 = Math.max(z1, z3);
+			y1 = Math.min(z2, z4);
+			y2 = Math.max(z2, z4);
+			if ((x1 <= x ) && ( x <= x2) && (y1 <= y) && (y <= y2)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+
+		function basic(){
+			if (procFase==true){
+				moveCoors();
+			 }
+		}
+
+		function semic(){
+			veRsm();
+			if(procFase == true){return;}
+		   var el = document.getElementById("rotulo");
+			   if (el.firstChild.data == "Validar" ||  el.firstChild.data == "Continuar" ) {
+
+				el.firstChild.data = "Detener";
+				myInterval = setInterval(veRsm, 1000);;
+				veRsm();		   		
+			   }else{
+				clearInterval(myInterval);
+				el.firstChild.data = "Continuar";
+			   }
+		   }
+
+
+		iniMsg = " CÓMO RELLENAR EL BOLETO"
+			+"\n - Modo sencillo: "
+			+"Marque los dos primeros o más bloques de 6 apuestas cada uno."
+			+"\n - Modo múltiple: "
+			+"De 5, 7, 8, 9, 10 u 11 apuestas en el primer bloque e indiquelo en la casilla correspondiente 44, 7, 28, 84. 210 o 462 ."
+			+"\n - Participación de la apuesta: Marque la casilla de Un sorteo,Semana en curso o Dos semanas.";
+
+			function comoJugar() {
+				alert(iniMsg);
+			}
+
+			function runVeryAfter(){alert(iniMsg);}
+			window.addEventListener("load", function () {window.setTimeout(runVeryAfter, 100);}, false);
+
+		</script>
+  </head>
+  <body onclick="basic()">
+ 	<div  style="position:relative; z-index:10">	
+		<p><button onclick="semic();" align="center" class="button" id="rotulo">Validar</button><span id="demo2"></span></p>
+   		<div style="position:relative; z-index:11">
+   			<p id="p1" align="center"></p>
+		</div>	
+	</div>
+   </body>
+</html>
