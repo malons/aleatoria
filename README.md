@@ -23,7 +23,7 @@ No existen.
 
 ### Instalación
 
-Copia index.html y boleto.png ...
+Copia index.html, marca.gif y boleto.png ...
 
 ### Ejecución
 
